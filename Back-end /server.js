@@ -1,4 +1,5 @@
 const express = require('express')
+const RM = require('./config/responseMessages.js')
 const app = express()
 
 // middleware
@@ -17,5 +18,5 @@ const PORT = process.env.PORT || 8080
 
 // server
 app.listen(PORT, () => {
-  console.log(`port ${PORT}, server is running`)
+  console.log(RM['001'], PORT)
 })

@@ -1,4 +1,6 @@
 const { where } = require('sequelize')
+const RM = require('../config/responseMessages.js')
+const { settings_table: st } = require('../config/constants.js')
 const db = require('../models')
 
 const Settings = db.settings
@@ -10,7 +12,7 @@ const getAllSettingValues = async (req, res) => {
     res.status(200).send(settings)
   } catch (error) {
     console.error(error)
-    res.status(500).send({ message: 'Failed to retrieve value(s).' })
+    res.status(500).send({ message: RM['011'] })
   }
 }
 
@@ -18,10 +20,13 @@ const getAllSettingValues = async (req, res) => {
 const setOneSettingValues = async (req, res) => {
   try {
     console.log(req)
-    await Settings.update({ ...req.body }, { where: { pk_setting: 'R' } })
-    res.status(200).send({ message: 'ok.' })
+    await Settings.update(
+      { ...req.body },
+      { where: { pk_setting: st.CONSTANT_PK } }
+    )
+    res.status(200).send({ message: RM['012'] })
   } catch (error) {
-    res.status(500).send({ message: 'Failed to update Settings data.' })
+    res.status(500).send({ message: RM['013'] })
   }
 }
 

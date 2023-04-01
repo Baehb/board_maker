@@ -1,5 +1,6 @@
 const dbConfig = require('../config/dbConfig.js')
 const dbInsert = require('../config/dbInsert.js')
+const RM = require('../config/responseMessages.js')
 const { Sequelize, DataTypes } = require('sequelize')
 
 // Sequelize Object 생성
@@ -17,10 +18,10 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
 sequelize
   .authenticate()
   .then(() => {
-    console.log('connected.')
+    console.log(RM['002'])
   })
   .catch(err => {
-    console.log(`err: ${err}`)
+    console.log(RM['003'], err)
   })
 
 // db 객체 생성 및 Sequelize, sequelize 주입
@@ -36,7 +37,7 @@ db.settings = require('./settings.js')(sequelize, DataTypes)
 db.sequelize
   .sync({ force: true })
   .then(() => {
-    console.log('resync done.')
+    console.log(RM['004'])
 
     // 사전값 주입
     dbInsert.settingRowInsert(db)

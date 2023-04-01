@@ -33,6 +33,8 @@ const settings_table = {
   POST_ADD_REPLY_NUM: 5,
   // 가입기본점수
   SIGN_UP_SCORE: 10,
+  // PK용알파벳
+  CONSTANT_PK: 'R',
 }
 
 module.exports = {
