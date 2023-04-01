@@ -45,15 +45,13 @@
 <p align="center"><img width="65%" height="65%" src="https://user-images.githubusercontent.com/113015792/229288479-c8a222c9-699c-4272-8bb7-9c3fe37fc866.png"></p>
 
 # 4. 페이지 기능&분류도
-<p align="center">
-<img width="450" height="300" src="https://user-images.githubusercontent.com/113015792/229288721-7e2e97e4-9645-4581-9980-84a3fe16d7fb.png"><img width="450"  height="300" src="https://user-images.githubusercontent.com/113015792/229288732-4cebcf10-9067-4d1c-8897-e5306f9088e7.png"></p>
+<p align="center"><img width="944" src="https://user-images.githubusercontent.com/113015792/229290915-a17864fe-9a75-4fce-9c38-6b8c9e7830a1.png">
+</p>
 <div align="center"><ul><li>해당 이미지는 일부입니다. 전체 파일은 document 폴더를 참조하세요.</li></ul></div>
 
 # 5. 화면설계서
 
-<p align="center">
-<img width="500" src="https://user-images.githubusercontent.com/113015792/229289168-56e2c3d3-c238-4fde-8871-deb2dfe25652.png">
-<img width="500" src="https://user-images.githubusercontent.com/113015792/229289165-822382a1-adb8-4a64-bfef-4c8f4768d1eb.png"></p>
+<p align="center"><img width="1037" src="https://user-images.githubusercontent.com/113015792/229291060-408b9228-3ace-44b8-a492-fef800460892.png"></p>
 <div align="center"><ul><li>해당 이미지는 일부입니다. 전체 파일은 document 폴더를 참조하세요.</li></ul></div>
 
 # 6. 데이터베이스 설계(ERD)
