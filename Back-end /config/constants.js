@@ -26,9 +26,9 @@ const member_table = {
   MBR_CERT_NUM: 8,
 
   // 스케쥴러 호출 시간 = 10초
-  CALL_SCHEDULER_TIME: 10000,
-  // 스케쥴러 유지 시간 = 1분(TEST)
-  CONT_SCHEDULER_TIME: 30000,
+  CALL_SCHEDULER_TIME: 10,
+  // 스케쥴러 유지 시간 = 10분
+  CONT_SCHEDULER_TIME: 600000,
 }
 
 // settings_table(settings.js)
