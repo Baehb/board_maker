@@ -37,7 +37,52 @@ const settings_table = {
   CONSTANT_PK: 'R',
 }
 
+// emailController.js
+const mail = {
+  // 메일 제목
+  subject: 'board_maker 인증번호가 도착하였습니다.',
+  // 메일 형식
+  mailform(certNum) {
+    return `
+    <table width="100%" cellspacing="0" cellpadding="0">
+      <tr>
+        <td>
+          <table
+            width="300"
+            height="200"
+            cellspacing="0"
+            cellpadding="0"
+            style="
+              border-radius: 15px;
+              box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+              background-color: #f5f5f5;
+            "
+          >
+            <tr>
+              <td valign="middle">
+                <p
+                  style="
+                    font-size: 32px;
+                    font-weight: bold;
+                    color: #4a4a4a;
+                    text-align: center;
+                    margin: 0;
+                  "
+                >
+                  ${certNum}
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <div><br>위 인증번호를, 인증번호란에 입력하십시오.</div>`
+  },
+}
+
 module.exports = {
   member_table,
   settings_table,
+  mail,
 }

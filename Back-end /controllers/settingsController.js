@@ -19,7 +19,6 @@ const getAllSettingValues = async (req, res) => {
 // 2. 특정 기본값 업데이트 (어드민 전용)
 const setOneSettingValues = async (req, res) => {
   try {
-    console.log(req)
     await Settings.update(
       { ...req.body },
       { where: { pk_setting: st.CONSTANT_PK } }
