@@ -6,6 +6,7 @@ const { v4 } = require('uuid')
 const date = new Date()
 
 const Member = db.member
+const temp_member_scheduler = {}
 
 // 1. 회원가입(구분치 설정 : 대기)
 const addMember = ({ body: b } = req, res) => {
@@ -26,7 +27,7 @@ const addMember = ({ body: b } = req, res) => {
     mbr_signup_date: date,
 
     // 인증번호 주입
-    mbr_cert_number: v4().substring(0, 8),
+    mbr_cert_number: v4().substring(0, member_table.MBR_CERT_NUM),
   }
 
   //row 생성
@@ -45,20 +46,16 @@ const addMember = ({ body: b } = req, res) => {
       res.status(500).send({ message: duplicateEntryCheck(error) })
     })
 
-  // 자동 삭제 스케쥴러
-  // 10분 뒤, 메일 인증번호가 전송되지 않았을 경우, 회원정보 전체 삭제 요청을 날린다.
+  // 스케쥴러 실행
+  schedulersetInterval(info)
 }
 
-// 2. 코드 인증시, 회원가입(구분치 변경 : 대기 -> 가입), 인증번호 삭제
+// 회원인증 : 作成要
 
-// 3. 회원정보 일부 수정(인증번호 삭제)
+// 2. 회원정보 単数~複数 갱신
+// 3. 회원정보 単数〜複数 삭제
 
-// 3. 회원정보 1~다수 등록
-// 3. 회원정보 1~다수 삭제
-
-// 4. 회원 탈퇴(구분치 변경 : 가입 => 탈퇴 )
-
-// 関数. 중복 검사
+// 関数. 중복(아이디, 닉네임, 이메일) 검사
 const duplicateEntryCheck = err => {
   // err != {}
   if (Object.keys(err).length !== 0) {
@@ -73,6 +70,55 @@ const duplicateEntryCheck = err => {
     return message[error_key]
   }
   return RM['098']
+}
+
+// 関数. 스케쥴러 시행
+const schedulersetInterval = info => {
+  // 임시 회원 스케쥴러 객체
+  temp_member_scheduler[info.mbr_email] = {
+    // 임시 회원 객체
+    temp_member: {
+      email: info.mbr_email,
+      verified: false,
+      start: false,
+    },
+    schedule: null,
+  }
+
+  // 각종 변수 초기화
+  let { email, verified, start } =
+    temp_member_scheduler[info.mbr_email].temp_member
+
+  // setInterval 스케쥴러
+  temp_member_scheduler[info.mbr_email].schedule = setInterval(() => {
+    // 시작 알림
+    if (!start) {
+      start = true
+      console.log(RM['030'], email)
+    }
+
+    // 인증됨
+    if (verified) {
+      // 회원가입(구분치 설정 : 대기 => 가입) : 作成要
+      endschedulerclearInterval(email)
+    }
+
+    // 미인증 10분 초과
+    const limit = new Date() - info.mbr_signup_date
+    if (limit >= member_table.CONT_SCHEDULER_TIME) {
+      // 회원삭제(임시가입 => 정보삭제) : 作成要
+      endschedulerclearInterval(email)
+      delete temp_member_scheduler[email]
+    }
+  }, member_table.CALL_SCHEDULER_TIME)
+
+  // 内部関数. 스케쥴러 종료
+  const endschedulerclearInterval = mail => {
+    clearInterval(temp_member_scheduler[info.mbr_email].schedule)
+    temp_member_scheduler[info.mbr_email] = null
+
+    console.log(RM['031'], mail)
+  }
 }
 
 module.exports = {

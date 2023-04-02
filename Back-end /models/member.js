@@ -1,3 +1,5 @@
+const { member_table } = require('../config/constants')
+
 module.exports = (sequelize, DataTypes) => {
   const Member = sequelize.define('member_table', {
     mbr_code: {
@@ -31,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       comment: '이메일 : ~@~의 형태만 들어갈 수 있다.',
     },
     mbr_cert_number: {
-      type: DataTypes.STRING(8),
+      type: DataTypes.STRING(member_table.MBR_CERT_NUM),
       allowNull: true,
       comment:
         '인증번호 : 1. 가입 시, 이메일 인증번호가 저장된다. 정식 가입 후, 삭제된다. 2. 비밀번호 찾기 시, 재설정번호가 저장된다. 비밀번호 재설정 후 삭제된다(설정하지 않아도 스케줄러에 위하여, 5분 뒤 자동 삭제된다).',

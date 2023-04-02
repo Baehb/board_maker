@@ -21,6 +21,14 @@ const member_table = {
       LEVEL: 1,
     },
   },
+
+  // 인증번호 길이
+  MBR_CERT_NUM: 8,
+
+  // 스케쥴러 호출 시간 = 10초
+  CALL_SCHEDULER_TIME: 10000,
+  // 스케쥴러 유지 시간 = 1분(TEST)
+  CONT_SCHEDULER_TIME: 30000,
 }
 
 // settings_table(settings.js)
@@ -44,40 +52,40 @@ const mail = {
   // 메일 형식
   mailform(certNum) {
     return `
-    <table width="100%" cellspacing="0" cellpadding="0">
-      <tr>
-        <td>
-          <table
-            width="300"
-            height="200"
-            cellspacing="0"
-            cellpadding="0"
-            style="
-              border-radius: 15px;
-              box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
-              background-color: #f5f5f5;
-            "
-          >
-            <tr>
-              <td valign="middle">
-                <p
-                  style="
-                    font-size: 32px;
-                    font-weight: bold;
-                    color: #4a4a4a;
-                    text-align: center;
-                    margin: 0;
-                  "
-                >
-                  ${certNum}
-                </p>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-    <div><br>위 인증번호를, 인증번호란에 입력하십시오.</div>`
+      <table width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+          <td>
+            <table
+              width="300"
+              height="200"
+              cellspacing="0"
+              cellpadding="0"
+              style="
+                border-radius: 15px;
+                box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+                background-color: #f5f5f5;
+              "
+            >
+              <tr>
+                <td valign="middle">
+                  <p
+                    style="
+                      font-size: 32px;
+                      font-weight: bold;
+                      color: #4a4a4a;
+                      text-align: center;
+                      margin: 0;
+                    "
+                  >
+                    ${certNum}
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <div><br>위 인증번호를, 인증번호란에 입력하십시오.</div>`
   },
 }
 
