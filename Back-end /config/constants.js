@@ -27,8 +27,8 @@ const member_table = {
 
   // 스케쥴러 호출 시간 = 10초
   CALL_SCHEDULER_TIME: 10,
-  // 스케쥴러 유지 시간 = 10분
-  CONT_SCHEDULER_TIME: 600000,
+  // 스케쥴러 유지 시간 = 1분(test)
+  CONT_SCHEDULER_TIME: 60000,
 }
 
 // settings_table(settings.js)
@@ -89,8 +89,21 @@ const mail = {
   },
 }
 
+const regexSearch = {
+  // 이메일 정규식
+  emailRegex:
+    /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i,
+  // 아이디 정규식
+  idRegex: /^(?=.*[A-Za-z])[A-Za-zd]{4,12}$/,
+  // 패스워드 정규식
+  passwordRegex: /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-zd!@#$%^&*]{8,20}$/,
+  // 닉네임 정규식
+  nicknameRegex: /^[가-힣]{2,6}$/,
+}
+
 module.exports = {
   member_table,
   settings_table,
   mail,
+  regexSearch,
 }

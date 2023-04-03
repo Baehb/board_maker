@@ -1,14 +1,18 @@
 const db = require('../models')
-const { member_table, settings_table } = require('../config/constants.js')
+const {
+  member_table,
+  settings_table,
+  regexSearch: R,
+} = require('../config/constants.js')
 const RM = require('../config/responseMessages.js')
 const { delivery } = require('./emailController.js')
-const { v4 } = require('uuid')
+const { v4, validate } = require('uuid')
 const schedule = require('node-schedule')
 
 const Member = db.member
 const temp_member_scheduler = {}
 
-// 1. 회원가입(구분치 설정 : 대기)
+// ※ 회원가입(임시)
 const addMember = ({ body: b } = req, res) => {
   let info = {
     // 실제 입력값
@@ -30,6 +34,12 @@ const addMember = ({ body: b } = req, res) => {
     mbr_cert_number: v4().substring(0, member_table.MBR_CERT_NUM),
   }
 
+  // 유효성 검사
+  const valMsg = regCheck(info)
+  if (valMsg) {
+    return res.status(400).send({ message: valMsg })
+  }
+
   //row 생성
   Member.create(info)
     //메일 발송
@@ -42,6 +52,7 @@ const addMember = ({ body: b } = req, res) => {
       res.status(200).send({ message: RM['025'] })
     })
     .catch(error => {
+      console.log(error)
       // 컬럼 중복
       if (error.parent.code === 'ER_DUP_ENTRY') {
         res.status(500).send({ message: duplicateEntryCheck(error) })
@@ -54,12 +65,52 @@ const addMember = ({ body: b } = req, res) => {
   setScheduler(info)
 }
 
-// 회원인증 : 作成要
+// ※ 회원가입(정식)
+const setMemberStateRegular = async (req, res) => {
+  // 해당 이메일 스케쥴러 유뮤 검사
+  if (temp_member_scheduler.hasOwnProperty(req.body.mbr_email)) {
+    const updatedRow = await Member.update(
+      {
+        mbr_state: member_table.mbr_state.JOINED,
+      },
+      {
+        where: {
+          mbr_cert_number: req.body.mbr_cert_number,
+          mbr_email: req.body.mbr_email,
+        },
+      }
+    )
 
-// 2. 회원정보 単数~複数 갱신
-// 3. 회원정보 単数〜複数 삭제
+    // 업데이트 성공
+    if (updatedRow[0]) {
+      temp_member_scheduler[req.body.mbr_email].temp_member.verified = true
+      res.status(200).send({ message: RM['026'] })
+    }
+    // 오입력
+    else return res.status(500).send({ message: RM['034'] })
+  } else {
+    return res.status(500).send({ message: RM['010'] })
+  }
+}
 
-// 関数. 중복(아이디, 닉네임, 이메일) 검사
+// 関数. 유효성 검사
+const regCheck = info => {
+  let msg = ''
+
+  if (!R.idRegex.test(info.mbr_id)) {
+    msg = RM['080']
+  } else if (!R.passwordRegex.test(info.mbr_pw)) {
+    msg = RM['081']
+  } else if (!R.nicknameRegex.test(info.mbr_nickname)) {
+    msg = RM['082']
+  } else if (!R.emailRegex.test(info.mbr_email)) {
+    msg = RM['083']
+  }
+
+  return msg
+}
+
+// 関数. 중복 검사
 const duplicateEntryCheck = err => {
   let error_key = Object.keys(err.fields)[0] || 'default'
 
@@ -72,17 +123,16 @@ const duplicateEntryCheck = err => {
   return message[error_key]
 }
 
-// 関数. 스케쥴러 시행
-
-// 스케쥴러 설정 함수
+// 関数. 스케쥴러
 const setScheduler = info => {
-  const { mbr_email, mbr_signup_date } = info
+  const { mbr_email, mbr_signup_date, mbr_code } = info
 
   // 임시 회원 객체
   const temp_member = {
     email: mbr_email,
     verified: false,
     start: false,
+    code: mbr_code,
     lim: mbr_signup_date,
   }
 
@@ -100,7 +150,6 @@ const setScheduler = info => {
 
       // 인증됨
       if (temp_member.verified) {
-        // 회원가입(구분치 설정 : 대기 => 가입) : 作成要
         job.cancel()
         endScheduler(temp_member.email)
         return
@@ -108,13 +157,13 @@ const setScheduler = info => {
 
       // 미인증 10분 초과
       if (limit >= member_table.CONT_SCHEDULER_TIME) {
-        // 회원삭제(임시가입 => 정보삭제) : 作成要
+        console.log(RM['033'])
+        deleteNoSertMember(temp_member.email)
+
         job.cancel()
         endScheduler(temp_member.email)
         return
       }
-
-      console.log(limit, temp_member.email)
     }
   )
 
@@ -125,9 +174,15 @@ const setScheduler = info => {
   }
 }
 
-// 스케쥴러 종료 함수
+// 関数. 미인증 회원 삭제
+const deleteNoSertMember = async mail => {
+  await Member.destroy({ where: { mbr_email: mail } })
+  console.log(RM['017'])
+}
+
+// 関数. 스케쥴러 종료
 const endScheduler = mail => {
-  // 객체가 이미 삭제되었는지 확인, 꼬임 방지.
+  // 객체 삭제 확인
   if (temp_member_scheduler[mail]) {
     temp_member_scheduler[mail].job.cancel()
     delete temp_member_scheduler[mail]
@@ -137,4 +192,5 @@ const endScheduler = mail => {
 
 module.exports = {
   addMember,
+  setMemberStateRegular,
 }
