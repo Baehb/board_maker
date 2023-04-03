@@ -6,7 +6,7 @@ const {
 } = require('../config/constants.js')
 const RM = require('../config/responseMessages.js')
 const { delivery } = require('./emailController.js')
-const { v4, validate } = require('uuid')
+const { v4 } = require('uuid')
 const schedule = require('node-schedule')
 
 const Member = db.member
@@ -125,14 +125,13 @@ const duplicateEntryCheck = err => {
 
 // 関数. 스케쥴러
 const setScheduler = info => {
-  const { mbr_email, mbr_signup_date, mbr_code } = info
+  const { mbr_email, mbr_signup_date } = info
 
   // 임시 회원 객체
   const temp_member = {
     email: mbr_email,
     verified: false,
     start: false,
-    code: mbr_code,
     lim: mbr_signup_date,
   }
 
