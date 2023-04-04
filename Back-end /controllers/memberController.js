@@ -170,7 +170,7 @@ const setPasswords = (req, res) => {
         throw new Error(RM['094'])
       } else {
         return Member.update(
-          { mbr_pw: hashPassword(req.body.mbr_pw) },
+          { mbr_pw: hashPassword(req.body.mbr_pw), mbr_cert_number: null },
           {
             where: {
               mbr_state: member_table.mbr_state.JOINED,
