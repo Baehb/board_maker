@@ -2,7 +2,7 @@ nodemailer = require('nodemailer')
 const { MAIL_ID, MAIL_PW } = require('../config/secretData.js')
 const { mail } = require('../config/constants.js')
 
-const delivery = (toMail, certNum) => {
+const delivery = (toMail, certNum, code = false) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -14,8 +14,14 @@ const delivery = (toMail, certNum) => {
   const mailOptions = {
     from: MAIL_ID,
     to: toMail,
-    subject: mail.subject,
-    html: mail.mailform(certNum),
+    subject: mail.CERTMAIL,
+    html: mail.mailform(certNum, mail.CERTMAILTEXT),
+  }
+
+  // 비밀번호 찾기
+  if (code) {
+    mailOptions.subject = mail.FINDMAIL
+    mailOptions.html = mail.mailform(certNum, mail.FINDMAILTEXT)
   }
 
   // 메일 전송

@@ -48,45 +48,21 @@ const settings_table = {
 // emailController.js
 const mail = {
   // 메일 제목
-  subject: 'board_maker 인증번호가 도착하였습니다.',
+  CERTMAIL: 'board_maker 가입인증번호가 도착하였습니다.',
+  FINDMAIL: 'board_maker 비밀번호 재설정번호가 도착하였습니다.',
+  CERTMAILTEXT: '위 인증번호를, 인증번호란에 입력하십시오.',
+  FINDMAILTEXT: '위 재설정번호를, 설정번호란에 입력하십시오.',
   // 메일 형식
-  mailform(certNum) {
+  mailform(certNum, TEXT) {
     return `
       <table width="100%" cellspacing="0" cellpadding="0">
-        <tr>
-          <td>
-            <table
-              width="300"
-              height="200"
-              cellspacing="0"
-              cellpadding="0"
-              style="
-                border-radius: 15px;
-                box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
-                background-color: #f5f5f5;
-              "
-            >
-              <tr>
-                <td valign="middle">
-                  <p
-                    style="
-                      font-size: 32px;
-                      font-weight: bold;
-                      color: #4a4a4a;
-                      text-align: center;
-                      margin: 0;
-                    "
-                  >
-                    ${certNum}
-                  </p>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-      <div><br>위 인증번호를, 인증번호란에 입력하십시오.</div>`
+      <tr><td><table width="300" height="200" cellspacing="0" cellpadding="0"
+      style="border-radius: 15px; box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2); background-color: #f5f5f5;">
+      <tr><td valign="middle"><p style="font-size: 32px; font-weight: bold; color: #4a4a4a; text-align: center; margin: 0;">
+      ${certNum}</p></td></tr></table></td></tr></table><div><br>${TEXT}</div>`
   },
+  // 하루 비밀번호 찾기 가능횟수
+  MAILCOUNT: 5,
 }
 
 const regexSearch = {

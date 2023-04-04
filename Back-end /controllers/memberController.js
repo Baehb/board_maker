@@ -1,18 +1,20 @@
 const db = require('../models')
+const Member = db.member
 const {
   member_table,
   settings_table,
   regexSearch: R,
+  mail,
 } = require('../config/constants.js')
 const RM = require('../config/responseMessages.js')
 const { delivery } = require('./emailController.js')
 const { v4 } = require('uuid')
 const schedule = require('node-schedule')
-
-const Member = db.member
+const bcrypt = require('bcrypt')
 const temp_member_scheduler = {}
+let mail_count = {}
 
-// ※ 회원가입(임시)
+// ① 회원가입(임시)
 const addMember = ({ body: b } = req, res) => {
   let info = {
     // 실제 입력값
@@ -34,14 +36,14 @@ const addMember = ({ body: b } = req, res) => {
     mbr_cert_number: v4().substring(0, member_table.MBR_CERT_NUM),
   }
 
-  // 유효성 검사
+  //유효성 검사
   const valMsg = regCheck(info)
   if (valMsg) {
     return res.status(400).send({ message: valMsg })
   }
 
   //row 생성
-  Member.create(info)
+  Member.create({ ...info, mbr_pw: hashPassword(info.mbr_pw) })
     //메일 발송
     .then(() => {
       delivery(info.mbr_email, info.mbr_cert_number)
@@ -52,8 +54,8 @@ const addMember = ({ body: b } = req, res) => {
       res.status(200).send({ message: RM['025'] })
     })
     .catch(error => {
-      console.log(error)
       // 컬럼 중복
+      console.log(error)
       if (error.parent.code === 'ER_DUP_ENTRY') {
         res.status(500).send({ message: duplicateEntryCheck(error) })
       } else {
@@ -65,7 +67,7 @@ const addMember = ({ body: b } = req, res) => {
   setScheduler(info)
 }
 
-// ※ 회원가입(정식)
+// ② 회원가입(정식)
 const setMemberStateRegular = async (req, res) => {
   // 해당 이메일 스케쥴러 유뮤 검사
   if (temp_member_scheduler.hasOwnProperty(req.body.mbr_email)) {
@@ -83,17 +85,113 @@ const setMemberStateRegular = async (req, res) => {
 
     // 업데이트 성공
     if (updatedRow[0]) {
+      // 스케쥴러 off
       temp_member_scheduler[req.body.mbr_email].temp_member.verified = true
+      // 인증 코드 삭제
+      updateMemberSertCode(req.body.mbr_email)
       res.status(200).send({ message: RM['026'] })
     }
     // 오입력
-    else return res.status(500).send({ message: RM['034'] })
+    else res.status(500).send({ message: RM['034'] })
   } else {
-    return res.status(500).send({ message: RM['010'] })
+    res.status(500).send({ message: RM['010'] })
   }
 }
 
-// 関数. 유효성 검사
+// ③ 비밀번호 찾기
+const findPasswords = async (req, res) => {
+  const cert = v4().substring(0, member_table.MBR_CERT_NUM)
+  const updatedRow = await Member.update(
+    { mbr_cert_number: cert },
+    {
+      where: {
+        mbr_email: req.body.mbr_email,
+        mbr_state: member_table.mbr_state.JOINED,
+      },
+    }
+  )
+
+  // 업데이트 성공
+  if (updatedRow[0]) {
+    // 한 아이디당, 하루 메일 전송 횟수 제한 설정
+    if (!mail_count.hasOwnProperty(req.body.mbr_email)) {
+      mail_count[req.body.mbr_email] = mail.MAILCOUNT
+    }
+    // 메일 전송
+    if (mail_count[req.body.mbr_email]) {
+      delivery(req.body.mbr_email, cert, true)
+      mail_count[req.body.mbr_email] = mail_count[req.body.mbr_email] - 1
+      res.status(200).send({ message: RM['040'] })
+    } else {
+      res.status(500).send({ message: RM['091'] })
+    }
+  } else {
+    res.status(500).send({ message: RM['090'] })
+  }
+}
+
+// ④. 비밀번호 재설정
+const setPasswords = (req, res) => {
+  let old_password = ''
+  let pwChk = pwCheck(req.body.mbr_pw)
+
+  Member.findOne({
+    where: {
+      mbr_email: req.body.mbr_email,
+      mbr_state: member_table.mbr_state.JOINED,
+    },
+  })
+    .then(findMember => {
+      // 検証: 1. 이메일 오입력 2. 미가입 회원
+      if (!findMember) throw new Error(RM['090'])
+      else {
+        return Member.findOne({
+          where: {
+            mbr_cert_number: req.body.mbr_cert_number,
+          },
+        })
+      }
+    })
+    .then(findMember => {
+      // 検証: 해당 이메일에 대한 설정번호 오입력
+      if (!findMember) {
+        throw new Error(RM['093'])
+      } else {
+        // 검증 완료 시, 기존 비밀번호 임시 저장
+        old_password = findMember['dataValues']['mbr_pw']
+      }
+
+      // 検証: 새로운 비밀번호 유효성 검사
+      if (pwChk) {
+        throw new Error(pwChk)
+      }
+      // 検証: 기존 비밀번호 동일
+      else if (comparePassword(req.body.mbr_pw, old_password)) {
+        throw new Error(RM['094'])
+      } else {
+        return Member.update(
+          { mbr_pw: hashPassword(req.body.mbr_pw) },
+          {
+            where: {
+              mbr_state: member_table.mbr_state.JOINED,
+            },
+          }
+        )
+      }
+    })
+    .then(updateMember => {
+      if (!updateMember) {
+        throw new Error(RM['099'])
+      } else {
+        res.status(200).send({ message: RM['095'] })
+      }
+    })
+    .catch(err => {
+      res.status(500).send({ message: err.message })
+    })
+}
+
+// 関数. 전체 유효성 검사
 const regCheck = info => {
   let msg = ''
 
@@ -107,6 +205,14 @@ const regCheck = info => {
     msg = RM['083']
   }
 
+  return msg
+}
+
+// 関数. 개별 유효성 검사(비밀번호)
+const pwCheck = pw => {
+  let msg = ''
+
+  if (!R.passwordRegex.test(pw)) msg = RM['081']
   return msg
 }
 
@@ -179,6 +285,12 @@ const deleteNoSertMember = async mail => {
   console.log(RM['017'])
 }
 
+// 関数. 인증코드 삭제
+const updateMemberSertCode = async mail => {
+  await Member.update({ mbr_cert_number: null }, { where: { mbr_email: mail } })
+  console.log(RM['019'])
+}
+
 // 関数. 스케쥴러 종료
 const endScheduler = mail => {
   // 객체 삭제 확인
@@ -189,7 +301,24 @@ const endScheduler = mail => {
   }
 }
 
+// 関数. 비밀번호 해쉬화
+const hashPassword = password =>
+  bcrypt.hashSync(password, bcrypt.genSaltSync(10))
+
+// 関数. 비밀번호 해쉬 일치
+const comparePassword = (password, hash) =>
+  (result = bcrypt.compareSync(password, hash))
+
+// 自動. 매 자정 실행
+schedule.scheduleJob('0 0 * * * *', () => {
+  console.log(RM['092'])
+  // 비밀번호 찾기 횟수 초기화
+  mail_count = {}
+})
+
 module.exports = {
   addMember,
   setMemberStateRegular,
+  findPasswords,
+  setPasswords,
 }
