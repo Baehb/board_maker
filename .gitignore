@@ -1,6 +1,5 @@
 Back-end /node_modules/*
 Back-end /config/secretData.js
 Back-end /test.js
-documents/*
 .DS_Store
 .vscode/launch.json

@@ -18,7 +18,7 @@ const delivery = (toMail, certNum, code = false) => {
     html: mail.mailform(certNum, mail.CERTMAILTEXT),
   }
 
-  // 비밀번호 찾기
+  // 비밀번호 재발급에서 발송
   if (code) {
     mailOptions.subject = mail.FINDMAIL
     mailOptions.html = mail.mailform(certNum, mail.FINDMAILTEXT)
