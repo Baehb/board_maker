@@ -41,7 +41,7 @@ const addMember = ({ body: b } = req, res) => {
   if (valMsg) return res.status(400).send({ message: valMsg })
 
   //row 생성
-  Member.create({ ...info, mbr_pw: hashPassword(info.mbr_pw) })
+  addMemberOne({ ...info, mbr_pw: hashPassword(info.mbr_pw) })
     //메일 발송
     .then(() => {
       delivery(info.mbr_email, info.mbr_cert_number)
@@ -61,18 +61,8 @@ const addMember = ({ body: b } = req, res) => {
 }
 
 // ② 회원가입(정식)
-const setMemberStateRegular = async (req, res) => {
-  Member.update(
-    {
-      mbr_state: member_table.mbr_state.JOINED,
-    },
-    {
-      where: {
-        mbr_cert_number: req.body.mbr_cert_number,
-        mbr_email: req.body.mbr_email,
-      },
-    }
-  )
+const setMemberStateRegular = (req, res) => {
+  setMemberOne(req.body)
     .then(result => {
       if (result[0]) {
         // 스케쥴러 off
@@ -93,18 +83,10 @@ const setMemberStateRegular = async (req, res) => {
 }
 
 // ③ 비밀번호 찾기
-const findPasswords = async (req, res) => {
+const findPasswords = (req, res) => {
   const cert = v4().substring(0, member_table.MBR_CERT_NUM)
 
-  Member.update(
-    { mbr_cert_number: cert },
-    {
-      where: {
-        mbr_email: req.body.mbr_email,
-        mbr_state: member_table.mbr_state.JOINED,
-      },
-    }
-  )
+  findRequest(cert, req.body)
     .then(result => {
       // 업데이트 성공
       if (result[0]) {
@@ -127,12 +109,7 @@ const findPasswords = async (req, res) => {
 
 // ④. 비밀번호 재설정
 const setPasswords = (req, res) => {
-  Member.findOne({
-    where: {
-      mbr_email: req.body.mbr_email,
-      mbr_state: member_table.mbr_state.JOINED,
-    },
-  })
+  setNewPass(req.body)
     .then(result => {
       // 検証: 1. 이메일 오입력 2. 미가입 회원
       if (!result) throw new Error(RM['090'])
@@ -287,6 +264,44 @@ const checkCertNum = async cert =>
   await Member.findOne({
     where: {
       mbr_cert_number: cert,
+    },
+  })
+
+//　関数. 회원 추가
+const addMemberOne = async info => await Member.create(info)
+
+//　関数. 회원상태 변경(임시 => 정식)
+const setMemberOne = async ({ mbr_cert_number, mbr_email }) =>
+  await Member.update(
+    {
+      mbr_state: member_table.mbr_state.JOINED,
+    },
+    {
+      where: {
+        mbr_cert_number: mbr_cert_number,
+        mbr_email: mbr_email,
+      },
+    }
+  )
+
+//　関数. 재설정번호 업데이트
+const findRequest = async (cert, { mbr_email }) =>
+  await Member.update(
+    { mbr_cert_number: cert },
+    {
+      where: {
+        mbr_email: mbr_email,
+        mbr_state: member_table.mbr_state.JOINED,
+      },
+    }
+  )
+
+//　関数. 회원 조회
+const setNewPass = async ({ mbr_email }) =>
+  await Member.findOne({
+    where: {
+      mbr_email: mbr_email,
+      mbr_state: member_table.mbr_state.JOINED,
     },
   })
 

@@ -3,6 +3,7 @@ const { MAIL_ID, MAIL_PW } = require('../config/secretData.js')
 const { mail } = require('../config/constants.js')
 
 const delivery = (toMail, certNum, code = false) => {
+  // 발송자 설정
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -14,14 +15,11 @@ const delivery = (toMail, certNum, code = false) => {
   const mailOptions = {
     from: MAIL_ID,
     to: toMail,
-    subject: mail.CERTMAIL,
-    html: mail.mailform(certNum, mail.CERTMAILTEXT),
-  }
-
-  // 비밀번호 재발급에서 발송
-  if (code) {
-    mailOptions.subject = mail.FINDMAIL
-    mailOptions.html = mail.mailform(certNum, mail.FINDMAILTEXT)
+    // code값이 존재하면, 비밀번호 재발급에서 발송
+    subject: code ? mail.FINDMAIL : mail.CERTMAIL,
+    html: code
+      ? mail.mailform(certNum, mail.FINDMAILTEXT)
+      : mail.mailform(certNum, mail.CERTMAILTEXT),
   }
 
   // 메일 전송

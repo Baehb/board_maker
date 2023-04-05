@@ -37,10 +37,9 @@ db.settings = require('./settings.js')(sequelize, DataTypes)
 db.sequelize
   .sync({ force: true })
   .then(() => {
-    console.log(RM['004'])
-
     // 사전값 주입
     dbInsert.settingRowInsert(db)
+    console.log(RM['004'])
   })
   .catch(error => {
     console.error(error)
