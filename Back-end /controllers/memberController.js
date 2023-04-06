@@ -36,11 +36,10 @@ const addMember = ({ body: b } = req, res) => {
     mbr_cert_number: v4().substring(0, member_table.MBR_CERT_NUM),
   }
 
-  //유효성 검사
+  //検証: 유효성 검사
   const valMsg = regCheck(info)
   if (valMsg) return res.status(400).send({ message: valMsg })
 
-  //row 생성
   addMemberOne({ ...info, mbr_pw: hashPassword(info.mbr_pw) })
     //메일 발송
     .then(() => {
