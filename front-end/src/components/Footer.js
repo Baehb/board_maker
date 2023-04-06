@@ -5,8 +5,8 @@ const Footer = () => {
     <div>
       <AppBar position='static' color='primary'>
         <Toolbar style={{ justifyContent: 'center' }}>
-          <Typography style={{ fontWeight: 'bold' }}>
-            Portfolio of Bae, created in 2023
+          <Typography style={{ fontWeight: 'bold', fontSize: 'small' }}>
+            Board Mamker, created in 2023.
           </Typography>
         </Toolbar>
       </AppBar>
