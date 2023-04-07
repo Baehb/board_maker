@@ -13,9 +13,9 @@ const store = createStore(rootReducer)
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#424242'
-    }
-  }
+      main: '#424242',
+    },
+  },
 })
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
