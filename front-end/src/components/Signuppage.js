@@ -1,21 +1,22 @@
-import { useState } from 'react'
 import { TabContext, TabPanel } from '@mui/lab'
 import SignupTab from './tabs/SignupTab.js'
 import { Box, Tab, Tabs } from '@mui/material'
+import { useDispatch, useSelector } from 'react-redux'
 
 const Content = () => {
-  const [value, setValue] = useState('1')
-  const handleChange = (event, newValue) => {
-    setValue(newValue)
+  const dispatch = useDispatch()
+  const value = useSelector(state => state.signUp.tab)
+  const tabChange = (event, newValue) => {
+    dispatch({ type: 'ChangeTab', payload: newValue })
   }
 
   return (
-    <Box sx={{ width: '100%', height: '100vh' }}>
+    <Box sx={{ width: '100%', height: '110vh' }}>
       <TabContext value={value}>
         <Box>
           <Tabs
             value={value}
-            onChange={handleChange}
+            onChange={tabChange}
             textColor='primary'
             indicatorColor='primary'
             variant='fullWidth'
