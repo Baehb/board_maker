@@ -84,3 +84,12 @@
 # 9. AWS 호스팅
 
 제조 완료 후, 진행 예정입니다.
+
+# 번외. 개발 중 화면
+
+<p align="center">
+<img width="600" src="https://user-images.githubusercontent.com/113015792/230740896-45c6083d-d59c-4326-80a8-e7ac63f5f45f.png">
+<img width="340" src="https://user-images.githubusercontent.com/113015792/230740903-0bb97cd6-77bc-48c4-8e1d-1360a2b420f6.png">
+</p>
+
+
