@@ -1,5 +1,6 @@
 import { TabContext, TabPanel } from '@mui/lab'
 import SignupTab from './tabs/SignupTab.js'
+import MailAuth from './tabs/MailAuth.js'
 import { Box, Tab, Tabs } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -11,7 +12,7 @@ const Content = () => {
   }
 
   return (
-    <Box sx={{ width: '100%', height: '110vh' }}>
+    <Box sx={{ width: '100%', height: { md: '95vh', xs: '108vh' } }}>
       <TabContext value={value}>
         <Box>
           <Tabs
@@ -28,16 +29,20 @@ const Content = () => {
             }}
           >
             <Tab label='회원가입' value='1' />
-            <Tab label='비밀번호 찾기' value='2' />
-            <Tab label='코드입력' value='3' />
+            <Tab label='메일인증' value='2' />
+            <Tab label='암호 찾기' value='3' />
+            <Tab label='암호 재설정 ' value='4' />
           </Tabs>
         </Box>
         <Box>
           <TabPanel value='1'>
             <SignupTab />
           </TabPanel>
-          <TabPanel value='2'></TabPanel>
+          <TabPanel value='2'>
+            <MailAuth />
+          </TabPanel>
           <TabPanel value='3'></TabPanel>
+          <TabPanel value='4'></TabPanel>
         </Box>
       </TabContext>
     </Box>

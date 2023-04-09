@@ -50,8 +50,8 @@ const mail = {
   // 메일 제목
   CERTMAIL: 'board_maker 가입인증번호가 도착하였습니다.',
   FINDMAIL: 'board_maker 비밀번호 재설정번호가 도착하였습니다.',
-  CERTMAILTEXT: '위 인증번호를, 인증번호란에 입력하십시오.',
-  FINDMAILTEXT: '위 재설정번호를, 설정번호란에 입력하십시오.',
+  CERTMAILTEXT: '위 인증번호를, 메일인증 탭에 입력하십시오.',
+  FINDMAILTEXT: '위 재설정번호를, 암호 재설정 탭에 입력하십시오.',
   // 메일 형식
   mailform(certNum, TEXT) {
     return `

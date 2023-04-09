@@ -54,7 +54,7 @@ const addMember = ({ body: b } = req, res) => {
     .catch(error => {
       // 컬럼 중복
       if (error.parent.code === 'ER_DUP_ENTRY')
-        res.status(500).send({ message: duplicateEntryCheck(error) })
+        res.status(400).send({ message: duplicateEntryCheck(error) })
       else res.status(500).send({ message: error.message })
     })
 }

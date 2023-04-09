@@ -5,6 +5,10 @@ const initialState = {
   form: Array(5).fill(''),
   showPasswordOne: false,
   showPasswordTwo: false,
+  freeze: false,
+  responseMessage: '',
+  messageOpen: false,
+  theme: '',
 }
 
 const signUStore = (state = initialState, action) => {
@@ -21,6 +25,14 @@ const signUStore = (state = initialState, action) => {
       return { ...state, showPasswordOne: !state.showPasswordOne }
     case 'ShowPasswordTwo':
       return { ...state, showPasswordTwo: !state.showPasswordTwo }
+    case 'SetFreeze':
+      return { ...state, freeze: true }
+    case 'SetMessage':
+      return { ...state, responseMessage: action.payload }
+    case 'ShowToast':
+      return { ...state, messageOpen: action.payload }
+    case 'SetTheme':
+      return { ...state, theme: action.payload }
     default:
       return state
   }

@@ -1,10 +1,12 @@
 const express = require('express')
+const cors = require('cors')
 const RM = require('./config/responseMessages.js')
 const app = express()
 
 // middleware
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(cors())
 
 // routers
 const memberRouter = require('./routes/memberRouter.js')

@@ -9,6 +9,8 @@ import BadgeIcon from '@mui/icons-material/Badge'
 import MailOutlineIcon from '@mui/icons-material/MailOutline'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
+import axios from 'axios'
+import React from 'react'
 
 import {
   Box,
@@ -25,8 +27,10 @@ import {
 } from '@mui/material'
 
 const Signuptab = () => {
-  // 共通. dispatch 로딩
+  // 共通. dispatch 선언
   const dispatch = useDispatch()
+  // 共通. Freeze　로딩
+  const freeze = useSelector(state => state.signUp.freeze)
   // 共通. 폼 값
   const form = useSelector(state => state.signUp.form)
   // 共通. 에러
@@ -43,7 +47,7 @@ const Signuptab = () => {
       payload: newArray,
     })
   }
-  // 共通. 값 변경 공통 요총(form, error専用)
+  // 共通. 값 변경 공통 요청(form, error専用)
   const changeReq = (event, result, num) => {
     // 값 유무
     event.target.value
@@ -56,9 +60,7 @@ const Signuptab = () => {
 
   // 1. 체크박스 : termsCheck
   const termsCheck = useSelector(state => state.signUp.termsCheck)
-  const handleCheckboxChange = () => {
-    dispatch({ type: 'ChangeCheckBox' })
-  }
+  const handleCheckboxChange = () => dispatch({ type: 'ChangeCheckBox' })
 
   // 2-2. 아이디
   const idHandle = event => {
@@ -69,22 +71,13 @@ const Signuptab = () => {
   // 3-1. 비밀번호(상단) 확인
   const showPasswordOne = useSelector(state => state.signUp.showPasswordOne)
   // 3-2. 비밀번호(상단) 보기
-  const handleClickShowPasswordOne = () => {
-    dispatch({ type: 'ShowPasswordOne' })
-  }
-
+  const handleClickShowPasswordOne = () => dispatch({ type: 'ShowPasswordOne' })
   // 4-1. 비밀번호(하단) 확인
   const showPasswordTwo = useSelector(state => state.signUp.showPasswordTwo)
   // 4-2. 비밀번호(하단) 보기
-  const handleClickShowPasswordTwo = () => {
-    dispatch({ type: 'ShowPasswordTwo' })
-  }
-
+  const handleClickShowPasswordTwo = () => dispatch({ type: 'ShowPasswordTwo' })
   // 共通(3-4). 드래그 방지
-  const handleMouseDownPassword = event => {
-    event.preventDefault()
-  }
-
+  const handleMouseDownPassword = event => event.preventDefault()
   // 共通(3-4). 비밀번호 변경
   const pwHandle = event => {
     const val = event.target.value
@@ -106,6 +99,49 @@ const Signuptab = () => {
   const emailHandle = event => {
     const result = constants.emailRegex.test(event.target.value)
     changeReq(event, result, 4)
+  }
+
+  // 6. 토스트 메시지
+  const handleClick = () => dispatch({ type: 'ShowToast', payload: true })
+
+  // 通信. axios 비동기 처리
+  const submitHandle = async event => {
+    event.preventDefault()
+    try {
+      const response = await axios.post(
+        'http://localhost/api/member/addMember',
+        new FormData(event.target),
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+      // 가입 성공(200)
+      dispatch({ type: 'SetFreeze' })
+      dispatch({ type: 'SetMessage', payload: response.data.message })
+      dispatch({ type: 'SetTheme', payload: 'success' })
+      handleClick()
+
+      // 2초 후 메일인증 탭 자동 이동
+      await new Promise(resolve => setTimeout(resolve, 3000))
+      dispatch({ type: 'ChangeTab', payload: 2 })
+    } catch (err) {
+      if (err.code === 'ERR_NETWORK') {
+        // 통신 실패
+        dispatch({ type: 'SetMessage', payload: '서버가 응답하지 않습니다.' })
+        dispatch({ type: 'SetTheme', payload: 'error' })
+      } else if (err.response.status === 400) {
+        // 중복 처리(400)
+        dispatch({ type: 'SetMessage', payload: err.response.data.message })
+        dispatch({ type: 'SetTheme', payload: 'warning' })
+      } else {
+        // 그 외 에러(500)
+        dispatch({ type: 'SetMessage', payload: err.response.data.message })
+        dispatch({ type: 'SetTheme', payload: 'error' })
+      }
+      handleClick()
+    }
   }
 
   return (
@@ -137,18 +173,20 @@ const Signuptab = () => {
         </Grid>
       </Grid>
       {/* 폼 영역 */}
-      <Grid container>
+      <Grid container component='form' onSubmit={submitHandle}>
         <Grid item xs={12}>
           <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
             <PermIdentityIcon sx={icon} />
             <TextField
-              sx={{ width: '100%', marginTop: '4vh' }}
+              sx={{ width: '100%', marginTop: '0vh' }}
               label='아이디'
+              name='mbr_id'
+              autoComplete='username'
               variant='standard'
               value={form[0]}
-              required
-              onChange={idHandle}
               error={error[0]}
+              onChange={idHandle}
+              required
               helperText={
                 error[0]
                   ? '소문자로 시작 및 숫자를 조합할 수 있습니다. (4~12자)'
@@ -164,9 +202,8 @@ const Signuptab = () => {
             <FormControl
               sx={{ width: '100%', marginTop: '-0.75vh' }}
               variant='standard'
-              value={form[1]}
-              onChange={pwHandle}
               error={error[1]}
+              onChange={pwHandle}
               required
             >
               <InputLabel htmlFor='standard-adornment-password'>
@@ -174,6 +211,8 @@ const Signuptab = () => {
               </InputLabel>
               <Input
                 id='ChangePwValueOne'
+                value={form[1]}
+                autoComplete='new-password'
                 type={showPasswordOne ? 'text' : 'password'}
                 endAdornment={
                   <InputAdornment position='end'>
@@ -201,7 +240,6 @@ const Signuptab = () => {
             <FormControl
               sx={{ width: '100%', marginTop: '-0.75vh' }}
               variant='standard'
-              value={form[2]}
               onChange={pwHandle}
               error={error[2]}
               // 해제 조건 : 1. 아이디 입력(○) 2. 에러(☓)
@@ -213,6 +251,9 @@ const Signuptab = () => {
               </InputLabel>
               <Input
                 id='ChangePwValueTwo'
+                name='mbr_pw'
+                value={form[2]}
+                autoComplete='new-password'
                 type={showPasswordTwo ? 'text' : 'password'}
                 endAdornment={
                   <InputAdornment position='end'>
@@ -240,9 +281,11 @@ const Signuptab = () => {
             <TextField
               sx={{ width: '100%', marginTop: '-0.75vh' }}
               label='닉네임'
+              name='mbr_nickname'
               required
               variant='standard'
               onChange={nickHandle}
+              value={form[3]}
               error={error[3]}
               helperText={error[3] ? '한글 닉네임만 가능합니다. (2~6자)' : ' '}
             />
@@ -256,9 +299,11 @@ const Signuptab = () => {
                 <TextField
                   sx={{ width: '100%' }}
                   label='이메일'
+                  name='mbr_email'
                   required
                   onChange={emailHandle}
                   variant='standard'
+                  value={form[4]}
                   error={error[4]}
                   helperText={
                     error[4] ? '올바른 형태의 이메일을 입력하세요.' : ' '
@@ -283,11 +328,13 @@ const Signuptab = () => {
                     !(
                       termsCheck &&
                       !error.includes(true) &&
-                      form.every(item => item.length > 0)
+                      form.every(item => item.length > 0) &&
+                      !freeze
                     )
                   }
+                  type='submit'
                 >
-                  신청
+                  {freeze ? '신청중' : '신청'}
                 </Button>
               </Box>
             </Grid>
