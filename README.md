@@ -80,6 +80,7 @@
 <li>회원가입 관련 API 작성</li>
 <li>프론트엔드 환경설정, 회원가입 탭 페이지 목업 작성</li>
 <li>가입 요청 성공, 정상 DB 주입 완료.</li>
+<li>메일 인증 성공, 정상 DB 변경 완료.</li>
 </ul>
 
 # 9. AWS 호스팅
@@ -91,6 +92,8 @@
 <p align="center">
 <img width="600" src="https://user-images.githubusercontent.com/113015792/230740896-45c6083d-d59c-4326-80a8-e7ac63f5f45f.png">
 <img width="340" src="https://user-images.githubusercontent.com/113015792/230740903-0bb97cd6-77bc-48c4-8e1d-1360a2b420f6.png">
+<img width="600" src="https://user-images.githubusercontent.com/113015792/230980345-93b15e64-7a81-4e92-8da1-9886e5531d01.png">
+<img width="340" src="https://user-images.githubusercontent.com/113015792/230980409-86c002df-22bb-4720-8a15-c6c3d4e85522.png">
 </p>
 
 
