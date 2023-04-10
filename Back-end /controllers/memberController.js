@@ -53,7 +53,7 @@ const addMember = ({ body: b } = req, res) => {
     })
     .catch(error => {
       // 컬럼 중복
-      if (error.parent.code === 'ER_DUP_ENTRY')
+      if (error?.parent.code === 'ER_DUP_ENTRY')
         res.status(400).send({ message: duplicateEntryCheck(error) })
       else res.status(500).send({ message: error.message })
     })
@@ -74,9 +74,10 @@ const setMemberStateRegular = (req, res) => {
       if (result[0]) {
         console.log(RM['012'])
         res.status(200).send({ message: RM['026'] })
-      } else throw new Error(RM['013'])
+      } else throw new Error(RM['027'])
     })
     .catch(error => {
+      console.log(RM['013'])
       res.status(500).send({ message: error.message })
     })
 }

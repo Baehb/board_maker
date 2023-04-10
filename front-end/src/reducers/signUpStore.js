@@ -9,6 +9,8 @@ const initialState = {
   responseMessage: '',
   messageOpen: false,
   theme: '',
+  certEmail: '',
+  certNum: '',
 }
 
 const signUStore = (state = initialState, action) => {
@@ -33,6 +35,10 @@ const signUStore = (state = initialState, action) => {
       return { ...state, messageOpen: action.payload }
     case 'SetTheme':
       return { ...state, theme: action.payload }
+    case 'SetCertEmail':
+      return { ...state, certEmail: action.payload }
+    case 'SetCertNum':
+      return { ...state, certNum: action.payload }
     default:
       return state
   }

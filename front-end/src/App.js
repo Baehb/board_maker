@@ -26,21 +26,23 @@ const App = () => {
         <Grid item xs={12}>
           <Header />
         </Grid>
-        <Grid container>
-          <Grid item xs={false} sm={2} />
-          <Grid
-            item
-            xs={12}
-            sm={8}
-            sx={{
-              height: '0%',
-              display: 'flex',
-              justifyContent: 'center',
-            }}
-          >
-            <Signuppage />
+        <Grid item xs={12}>
+          <Grid container>
+            <Grid item xs={false} sm={2} />
+            <Grid
+              item
+              xs={12}
+              sm={8}
+              sx={{
+                height: '0%',
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              <Signuppage />
+            </Grid>
+            <Grid item xs={false} sm={2} />
           </Grid>
-          <Grid item xs={false} sm={2} />
         </Grid>
         <Grid item xs={12}>
           <Footer />

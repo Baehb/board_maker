@@ -11,6 +11,7 @@ import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import axios from 'axios'
 import React from 'react'
+import icon from '../../config/commonStyle.js'
 
 import {
   Box,
@@ -127,10 +128,10 @@ const Signuptab = () => {
       await new Promise(resolve => setTimeout(resolve, 3000))
       dispatch({ type: 'ChangeTab', payload: 2 })
     } catch (err) {
+      dispatch({ type: 'SetTheme', payload: 'error' })
       if (err.code === 'ERR_NETWORK') {
         // 통신 실패
         dispatch({ type: 'SetMessage', payload: '서버가 응답하지 않습니다.' })
-        dispatch({ type: 'SetTheme', payload: 'error' })
       } else if (err.response.status === 400) {
         // 중복 처리(400)
         dispatch({ type: 'SetMessage', payload: err.response.data.message })
@@ -138,7 +139,6 @@ const Signuptab = () => {
       } else {
         // 그 외 에러(500)
         dispatch({ type: 'SetMessage', payload: err.response.data.message })
-        dispatch({ type: 'SetTheme', payload: 'error' })
       }
       handleClick()
     }
@@ -186,7 +186,6 @@ const Signuptab = () => {
               value={form[0]}
               error={error[0]}
               onChange={idHandle}
-              required
               helperText={
                 error[0]
                   ? '소문자로 시작 및 숫자를 조합할 수 있습니다. (4~12자)'
@@ -204,7 +203,6 @@ const Signuptab = () => {
               variant='standard'
               error={error[1]}
               onChange={pwHandle}
-              required
             >
               <InputLabel htmlFor='standard-adornment-password'>
                 비밀번호
@@ -244,7 +242,6 @@ const Signuptab = () => {
               error={error[2]}
               // 해제 조건 : 1. 아이디 입력(○) 2. 에러(☓)
               disabled={!(form[1] && !error[1])}
-              required
             >
               <InputLabel htmlFor='standard-adornment-password'>
                 비밀번호 재입력
@@ -282,7 +279,6 @@ const Signuptab = () => {
               sx={{ width: '100%', marginTop: '-0.75vh' }}
               label='닉네임'
               name='mbr_nickname'
-              required
               variant='standard'
               onChange={nickHandle}
               value={form[3]}
@@ -300,7 +296,6 @@ const Signuptab = () => {
                   sx={{ width: '100%' }}
                   label='이메일'
                   name='mbr_email'
-                  required
                   onChange={emailHandle}
                   variant='standard'
                   value={form[4]}
@@ -321,7 +316,7 @@ const Signuptab = () => {
               >
                 <Button
                   size='large'
-                  sx={{ width: '80%', fontWeight: 'bold', fontSize: fontSize }}
+                  sx={{ width: '90%', fontWeight: 'bold', fontSize }}
                   variant='contained'
                   // 통과 조건 : 1. 체크(○) 2. 모든 에러(☓) 3. 모든 폼 입력(○)
                   disabled={
@@ -345,18 +340,9 @@ const Signuptab = () => {
   )
 }
 
-// 유동적 버튼 폰트 사이즈
 const fontSize = {
   xs: '11px',
   md: '15px',
-}
-
-// 아이콘 에러텍스트 대응
-const icon = {
-  color: 'action.active',
-  mr: 1,
-  my: 0.5,
-  marginBottom: '2.75vh',
 }
 
 export default Signuptab
