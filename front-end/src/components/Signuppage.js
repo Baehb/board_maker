@@ -1,6 +1,8 @@
 import { TabContext, TabPanel } from '@mui/lab'
 import SignupTab from './tabs/SignupTab.js'
 import MailAuthTab from './tabs/MailAuthTab.js'
+import ForgotPassword from './tabs/ForgotPasswordTab.js'
+
 import { Box, Tab, Tabs } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -10,6 +12,9 @@ const Content = () => {
   const tabChange = (event, newValue) => {
     dispatch({ type: 'ChangeTab', payload: newValue })
   }
+
+  //共通. 클릭
+  const handleClick = () => dispatch({ type: 'ShowToast', payload: true })
 
   return (
     <Box sx={{ width: '100%', height: { md: '100vh', xs: '108vh' } }}>
@@ -36,12 +41,14 @@ const Content = () => {
         </Box>
         <Box>
           <TabPanel value='1'>
-            <SignupTab />
+            <SignupTab handleClick={handleClick} />
           </TabPanel>
           <TabPanel value='2'>
-            <MailAuthTab />
+            <MailAuthTab handleClick={handleClick} />
           </TabPanel>
-          <TabPanel value='3'></TabPanel>
+          <TabPanel value='3'>
+            <ForgotPassword handleClick={handleClick} />
+          </TabPanel>
           <TabPanel value='4'></TabPanel>
         </Box>
       </TabContext>

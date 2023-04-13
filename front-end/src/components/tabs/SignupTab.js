@@ -11,7 +11,7 @@ import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import axios from 'axios'
 import React from 'react'
-import icon from '../../config/commonStyle.js'
+import { icon, fontSize } from '../../config/commonStyle'
 
 import {
   Box,
@@ -27,7 +27,7 @@ import {
   FormHelperText,
 } from '@mui/material'
 
-const Signuptab = () => {
+const Signuptab = props => {
   // 共通. dispatch 선언
   const dispatch = useDispatch()
   // 共通. Freeze　로딩
@@ -102,9 +102,6 @@ const Signuptab = () => {
     changeReq(event, result, 4)
   }
 
-  // 6. 토스트 메시지
-  const handleClick = () => dispatch({ type: 'ShowToast', payload: true })
-
   // 通信. axios 비동기 처리
   const submitHandle = async event => {
     event.preventDefault()
@@ -122,25 +119,25 @@ const Signuptab = () => {
       dispatch({ type: 'SetFreeze' })
       dispatch({ type: 'SetMessage', payload: response.data.message })
       dispatch({ type: 'SetTheme', payload: 'success' })
-      handleClick()
+      props.handleClick()
 
-      // 2초 후 메일인증 탭 자동 이동
+      // 3초 후 메일인증 탭 자동 이동
       await new Promise(resolve => setTimeout(resolve, 3000))
       dispatch({ type: 'ChangeTab', payload: 2 })
-    } catch (err) {
+    } catch (error) {
       dispatch({ type: 'SetTheme', payload: 'error' })
-      if (err.code === 'ERR_NETWORK') {
+      if (error.code === 'ERR_NETWORK') {
         // 통신 실패
         dispatch({ type: 'SetMessage', payload: '서버가 응답하지 않습니다.' })
-      } else if (err.response.status === 400) {
-        // 중복 처리(400)
-        dispatch({ type: 'SetMessage', payload: err.response.data.message })
+      } else if (error.response.status === 409) {
+        // 중복 처리(409)
+        dispatch({ type: 'SetMessage', payload: error.response.data.message })
         dispatch({ type: 'SetTheme', payload: 'warning' })
       } else {
         // 그 외 에러(500)
-        dispatch({ type: 'SetMessage', payload: err.response.data.message })
+        dispatch({ type: 'SetMessage', payload: error.response.data.message })
       }
-      handleClick()
+      props.handleClick()
     }
   }
 
@@ -338,11 +335,6 @@ const Signuptab = () => {
       </Grid>
     </Grid>
   )
-}
-
-const fontSize = {
-  xs: '11px',
-  md: '15px',
 }
 
 export default Signuptab

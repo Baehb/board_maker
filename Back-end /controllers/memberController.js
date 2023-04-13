@@ -54,7 +54,7 @@ const addMember = ({ body: b } = req, res) => {
     .catch(error => {
       // 컬럼 중복
       if (error?.parent.code === 'ER_DUP_ENTRY')
-        res.status(400).send({ message: duplicateEntryCheck(error) })
+        res.status(409).send({ message: duplicateEntryCheck(error) })
       else res.status(500).send({ message: error.message })
     })
 }
@@ -99,11 +99,15 @@ const findPasswords = (req, res) => {
           delivery(req.body.mbr_email, cert, true)
           mail_count[req.body.mbr_email] = mail_count[req.body.mbr_email] - 1
           res.status(200).send({ message: RM['040'] })
-        } else throw new Error(RM['091'])
-      } else throw new Error(RM['090'])
+        } else throw new Error('Too_Many_Requests')
+      } else throw new Error('Not_Found')
     })
     .catch(error => {
-      res.status(500).send({ message: error.message })
+      if (error.message === 'Not_Found')
+        res.status(404).send({ message: RM['090'] })
+      else if (error.message === 'Too_Many_Requests')
+        res.status(429).send({ message: RM['091'] })
+      else res.status(500).send({ message: RM['099'] })
     })
 }
 
