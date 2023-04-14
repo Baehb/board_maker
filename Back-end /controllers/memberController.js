@@ -68,17 +68,24 @@ const setMemberStateRegular = (req, res) => {
         temp_member_scheduler[req.body.mbr_email].temp_member.verified = true
         // 인증 코드 삭제
         return updateMemberSertCode(req.body.mbr_email)
-      } else throw new Error(RM['034'])
+      } else throw new Error('Bad_Request')
     })
     .then(result => {
-      if (result[0]) {
+      if (!result[0]) throw new Error('Not_Found')
+      else {
         console.log(RM['012'])
         res.status(200).send({ message: RM['026'] })
-      } else throw new Error(RM['027'])
+      }
     })
     .catch(error => {
-      console.log(RM['013'])
-      res.status(500).send({ message: error.message })
+      if (error.message === 'Bad_Request') {
+        res.status(400).send({ message: RM['034'] })
+      } else if (error.message === 'Not_Found') {
+        console.log(RM['013'])
+        res.status(404).send({ message: RM['027'] })
+      } else {
+        res.status(500).send({ message: error.message })
+      }
     })
 }
 
@@ -113,10 +120,18 @@ const findPasswords = (req, res) => {
 
 // ④. 비밀번호 재설정
 const setPasswords = (req, res) => {
+  const err = new Error()
+
   setNewPass(req.body)
     .then(result => {
       // 検証: 1. 이메일 오입력 2. 미가입 회원
-      if (!result) throw new Error(RM['090'])
+      if (!result) {
+        err.message = 'Not_Found'
+        err.code = 1
+
+        throw err
+      }
+
       // 検証: 설정번호 검사
       else return checkCertNum(req.body.mbr_cert_number)
     })
@@ -125,23 +140,46 @@ const setPasswords = (req, res) => {
       const old_password = result
         ? result['dataValues']['mbr_pw']
         : (() => {
-            throw new Error(RM['093'])
+            err.message = 'Bad_Request'
+            err.code = 1
+
+            throw err
           })()
 
       // 検証: 새로운 비밀번호 유효성 검사
-      if (!R.passwordRegex.test(req.body.mbr_pw)) throw new Error(RM['081'])
+      if (!R.passwordRegex.test(req.body.mbr_pw)) {
+        err.message = 'Bad_Request'
+        err.code = 2
+
+        throw err
+      }
       // 検証: 기존 비밀번호 동일
-      else if (comparePassword(req.body.mbr_pw, old_password))
-        throw new Error(RM['094'])
+      else if (comparePassword(req.body.mbr_pw, old_password)) {
+        err.message = 'Bad_Request'
+        err.code = 3
+
+        throw err
+      }
       // 패스워드 업데이트
       else return updatePassword(req.body.mbr_pw)
     })
     .then(result => {
-      if (!result) throw new Error(RM['099'])
-      else res.status(200).send({ message: RM['095'] })
+      if (!result) {
+        err.message = 'Not_Found'
+        err.code = 2
+
+        throw err
+      } else res.status(200).send({ message: RM['095'] })
     })
-    .catch(err => {
-      res.status(500).send({ message: err.message })
+    .catch(error => {
+      if (error.message === 'Bad_Request') {
+        if (error.code === 1) res.status(400).send({ message: RM['093'] })
+        if (error.code === 2) res.status(400).send({ message: RM['081'] })
+        if (error.code === 3) res.status(400).send({ message: RM['094'] })
+      } else if (error.message === 'Not_Found') {
+        if (error.code === 1) res.status(404).send({ message: RM['090'] })
+        if (error.code === 2) res.status(404).send({ message: RM['099'] })
+      } else res.status(500).send({ message: error.message })
     })
 }
 
