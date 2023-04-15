@@ -114,7 +114,7 @@ const findPasswords = (req, res) => {
         res.status(404).send({ message: RM['090'] })
       else if (error.message === 'Too_Many_Requests')
         res.status(429).send({ message: RM['091'] })
-      else res.status(500).send({ message: RM['099'] })
+      else res.status(500).send({ message: error.message })
     })
 }
 

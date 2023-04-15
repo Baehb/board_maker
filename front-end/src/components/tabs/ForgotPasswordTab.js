@@ -4,9 +4,10 @@ import { Grid } from '@material-ui/core'
 import { useSelector, useDispatch } from 'react-redux'
 import MailOutlineIcon from '@mui/icons-material/MailOutline'
 import axios from 'axios'
-import { icon, fontSize } from '../../config/commonStyle'
+import { icon, fontSize, center } from '../../config/commonStyle'
+import { domain } from '../../config/constants'
 
-const ForgotPassword = props => {
+const ForgotPasswordTab = props => {
   const forgotEmail = useSelector(state => state.signUp.forgotEmail)
   const dispatch = useDispatch()
 
@@ -22,7 +23,7 @@ const ForgotPassword = props => {
 
     try {
       const response = await axios.post(
-        'http://localhost/api/member/findPasswords',
+        `${domain}/api/member/findPasswords`,
         new FormData(event.target),
         {
           headers: {
@@ -32,7 +33,6 @@ const ForgotPassword = props => {
       )
 
       // 요청 성공(200)
-      dispatch({ type: 'SetFreezePw' })
       dispatch({ type: 'SetMessage', payload: response.data.message })
       dispatch({ type: 'SetTheme', payload: 'success' })
       props.handleClick()
@@ -74,13 +74,7 @@ const ForgotPassword = props => {
       >
         <Grid container component='form' onSubmit={submitHandle}>
           <Grid item xs={12}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'flex-end',
-                justifyContent: 'center',
-              }}
-            >
+            <Box sx={center}>
               <MailOutlineIcon sx={icon} />
               <TextField
                 sx={{ width: '50%' }}
@@ -93,7 +87,6 @@ const ForgotPassword = props => {
               />
             </Box>
           </Grid>
-          <Grid item xs={12}></Grid>
           <Grid item xs={12}>
             <Button
               size='x-large'
@@ -111,4 +104,4 @@ const ForgotPassword = props => {
   )
 }
 
-export default ForgotPassword
+export default ForgotPasswordTab

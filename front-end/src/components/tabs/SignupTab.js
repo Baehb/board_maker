@@ -1,6 +1,6 @@
 import { loremIpsum } from 'react-lorem-ipsum'
 import { Grid } from '@material-ui/core'
-import constants from '../../config/constants'
+import { domain, regexSearch } from '../../config/constants'
 import { useSelector, useDispatch } from 'react-redux'
 import PermIdentityIcon from '@mui/icons-material/PermIdentity'
 import KeyIcon from '@mui/icons-material/Key'
@@ -10,7 +10,7 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import axios from 'axios'
-import React from 'react'
+import React, { useRef } from 'react'
 import { icon, fontSize } from '../../config/commonStyle'
 
 import {
@@ -44,7 +44,7 @@ const Signuptab = props => {
     newArray[num] = val
 
     dispatch({
-      type: type,
+      type,
       payload: newArray,
     })
   }
@@ -65,7 +65,7 @@ const Signuptab = props => {
 
   // 2-2. 아이디
   const idHandle = event => {
-    const result = constants.idRegex.test(event.target.value)
+    const result = regexSearch.idRegex.test(event.target.value)
     changeReq(event, result, 0)
   }
 
@@ -80,25 +80,31 @@ const Signuptab = props => {
   // 共通(3-4). 드래그 방지
   const handleMouseDownPassword = event => event.preventDefault()
   // 共通(3-4). 비밀번호 변경
+  const temp = useRef('')
   const pwHandle = event => {
     const val = event.target.value
     // 비밀번호 유효성 검사
-    const result = constants.passwordRegex.test(val)
+    const result = regexSearch.passwordRegex.test(val)
+
     // 비밀번호
-    if (event.target.id === 'ChangePwValueOne') changeReq(event, result, 1)
+    if (event.target.id === 'ChangePwValueOne') {
+      temp.current = val
+      changeReq(event, result, 1)
+    }
     // 비밀번호 확인
-    if (event.target.id === 'ChangePwValueTwo') changeReq(event, result, 2)
+    if (event.target.id === 'ChangePwValueTwo')
+      changeReq(event, temp.current === val, 2)
   }
 
   // 4. 닉네임
   const nickHandle = event => {
-    const result = constants.nicknameRegex.test(event.target.value)
+    const result = regexSearch.nicknameRegex.test(event.target.value)
     changeReq(event, result, 3)
   }
 
   // 5. 이메일
   const emailHandle = event => {
-    const result = constants.emailRegex.test(event.target.value)
+    const result = regexSearch.emailRegex.test(event.target.value)
     changeReq(event, result, 4)
   }
 
@@ -107,7 +113,7 @@ const Signuptab = props => {
     event.preventDefault()
     try {
       const response = await axios.post(
-        'http://localhost/api/member/addMember',
+        `${domain}/api/member/addMember`,
         new FormData(event.target),
         {
           headers: {
@@ -215,6 +221,7 @@ const Signuptab = props => {
                       aria-label='passwordVisOne'
                       onClick={handleClickShowPasswordOne}
                       onMouseDown={handleMouseDownPassword}
+                      tabIndex={-1}
                     >
                       {showPasswordOne ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
@@ -255,6 +262,7 @@ const Signuptab = props => {
                       aria-label='toggle password visiobility'
                       onClick={handleClickShowPasswordTwo}
                       onMouseDown={handleMouseDownPassword}
+                      tabIndex={-1}
                     >
                       {showPasswordTwo ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
@@ -315,12 +323,12 @@ const Signuptab = props => {
                   size='large'
                   sx={{ width: '90%', fontWeight: 'bold', fontSize }}
                   variant='contained'
-                  // 통과 조건 : 1. 체크(○) 2. 모든 에러(☓) 3. 모든 폼 입력(○)
+                  // 통과 조건 : 1. 체크(○) 2. 모든 에러(☓) 3. 모든 폼 입력(○) 4. 신청중이 아님
                   disabled={
                     !(
                       termsCheck &&
                       !error.includes(true) &&
-                      form.every(item => item.length > 0) &&
+                      form.every(item => item) &&
                       !freeze
                     )
                   }

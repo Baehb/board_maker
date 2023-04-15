@@ -1,4 +1,4 @@
-const { settings_table: st } = require('./constants.js')
+const { settings_table: st, domain } = require('./constants.js')
 const RM = require('./responseMessages.js')
 
 // 세팅값 API요청 => 세팅 테이블에 값이 없을 경우에만, 새로 세팅값을 넣어준다.
@@ -23,7 +23,7 @@ const settingRowInsert = info => {
 }
 
 const getAllSettingValues = async () =>
-  fetch(`http://localhost/api/member/getAllSettingValues`, {
+  fetch(`${domain}/api/member/getAllSettingValues`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   })

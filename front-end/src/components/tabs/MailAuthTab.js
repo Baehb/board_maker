@@ -6,6 +6,7 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline'
 import PasswordIcon from '@mui/icons-material/Password'
 import axios from 'axios'
 import { icon, fontSize } from '../../config/commonStyle'
+import { domain } from '../../config/constants'
 
 const MailAuthTab = props => {
   // 아이디
@@ -17,7 +18,7 @@ const MailAuthTab = props => {
   // 아이디 핸들
   const certEmailHandle = event =>
     dispatch({ type: 'SetCertEmail', payload: event.target.value })
-  // 비밀번호 핸들
+  // 설정번호 핸들
   const certNumHandle = event =>
     dispatch({ type: 'SetCertNum', payload: event.target.value })
 
@@ -26,7 +27,7 @@ const MailAuthTab = props => {
     event.preventDefault()
     try {
       const response = await axios.post(
-        'http://localhost/api/member/setMemberStateRegular',
+        `${domain}/api/member/setMemberStateRegular`,
         new FormData(event.target),
         {
           headers: {

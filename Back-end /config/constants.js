@@ -77,9 +77,13 @@ const regexSearch = {
   nicknameRegex: /^[가-힣]{2,6}$/,
 }
 
+// 호스팅시 정식 도메인 변경 要望
+const domain = `http://localhost`
+
 module.exports = {
   member_table,
   settings_table,
   mail,
   regexSearch,
+  domain,
 }
