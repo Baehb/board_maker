@@ -30,8 +30,6 @@ import {
 const Signuptab = props => {
   // 共通. dispatch 선언
   const dispatch = useDispatch()
-  // 共通. Freeze　로딩
-  const freeze = useSelector(state => state.signUp.freeze)
   // 共通. 폼 값
   const form = useSelector(state => state.signUp.form)
   // 共通. 에러
@@ -122,7 +120,14 @@ const Signuptab = props => {
         }
       )
       // 가입 성공(200)
-      dispatch({ type: 'SetFreeze' })
+      // 입력란 초기화
+      dispatch({
+        type: 'ChangeCheckBox',
+      })
+      dispatch({
+        type: 'ChangeData',
+        payload: Array(5).fill(''),
+      })
       dispatch({ type: 'SetMessage', payload: response.data.message })
       dispatch({ type: 'SetTheme', payload: 'success' })
       props.handleClick()
@@ -206,6 +211,7 @@ const Signuptab = props => {
               variant='standard'
               error={error[1]}
               onChange={pwHandle}
+              disabled={form[2].length > 0}
             >
               <InputLabel htmlFor='standard-adornment-password'>
                 비밀번호
@@ -328,13 +334,12 @@ const Signuptab = props => {
                     !(
                       termsCheck &&
                       !error.includes(true) &&
-                      form.every(item => item) &&
-                      !freeze
+                      form.every(item => item)
                     )
                   }
                   type='submit'
                 >
-                  {freeze ? '신청중' : '신청'}
+                  신청
                 </Button>
               </Box>
             </Grid>

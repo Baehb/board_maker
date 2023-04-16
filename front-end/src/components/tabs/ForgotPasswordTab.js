@@ -33,6 +33,11 @@ const ForgotPasswordTab = props => {
       )
 
       // 요청 성공(200)
+      // 입력란 초기화
+      dispatch({
+        type: 'SetForgotEmail',
+        payload: '',
+      })
       dispatch({ type: 'SetMessage', payload: response.data.message })
       dispatch({ type: 'SetTheme', payload: 'success' })
       props.handleClick()

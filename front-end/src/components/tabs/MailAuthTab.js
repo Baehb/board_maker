@@ -36,18 +36,7 @@ const MailAuthTab = props => {
         }
       )
       // 가입 성공(200)
-      // 회원가입란 초기화
-      dispatch({
-        type: 'SetFreeze',
-      })
-      dispatch({
-        type: 'ChangeCheckBox',
-      })
-      dispatch({
-        type: 'ChangeData',
-        payload: Array(5).fill(''),
-      })
-      // 인증란 초기화
+      // 입력란 초기화
       dispatch({
         type: 'SetCertEmail',
         payload: '',

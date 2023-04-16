@@ -11,7 +11,6 @@ const initialState = {
   error: Array(5).fill(false),
   showPasswordOne: false,
   showPasswordTwo: false,
-  freeze: false,
   // MailAuthTab
   certEmail: '',
   certNum: '',
@@ -19,8 +18,8 @@ const initialState = {
   forgotEmail: '',
   // ResetPasswordTab
   form2: Array(4).fill(''),
-  show2PasswordErrorOne: true,
-  show2PasswordErrorTwo: true,
+  show2PasswordErrorOne: false,
+  show2PasswordErrorTwo: false,
   show2PasswordOne: false,
   show2PasswordTwo: false,
 }
@@ -48,8 +47,6 @@ const signUStore = (state = initialState, action) => {
       return { ...state, showPasswordOne: !state.showPasswordOne }
     case 'ShowPasswordTwo':
       return { ...state, showPasswordTwo: !state.showPasswordTwo }
-    case 'SetFreeze':
-      return { ...state, freeze: !state.freeze }
     // MailAuthTab
     case 'SetCertEmail':
       return { ...state, certEmail: action.payload }

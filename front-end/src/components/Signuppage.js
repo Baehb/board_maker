@@ -1,7 +1,8 @@
 import { TabContext, TabPanel } from '@mui/lab'
 import SignupTab from './tabs/SignupTab.js'
 import MailAuthTab from './tabs/MailAuthTab.js'
-import ForgotPassword from './tabs/ForgotPasswordTab.js'
+import ForgotPasswordTab from './tabs/ForgotPasswordTab.js'
+import ResetPasswordTab from './tabs/ResetPasswordTab.js'
 
 import { Box, Tab, Tabs } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
@@ -47,9 +48,11 @@ const Content = () => {
             <MailAuthTab handleClick={handleClick} />
           </TabPanel>
           <TabPanel value='3'>
-            <ForgotPassword handleClick={handleClick} />
+            <ForgotPasswordTab handleClick={handleClick} />
           </TabPanel>
-          <TabPanel value='4'></TabPanel>
+          <TabPanel value='4'>
+            <ResetPasswordTab handleClick={handleClick} />
+          </TabPanel>
         </Box>
       </TabContext>
     </Box>
