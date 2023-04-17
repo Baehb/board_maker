@@ -3,19 +3,17 @@ import SignupTab from './tabs/SignupTab.js'
 import MailAuthTab from './tabs/MailAuthTab.js'
 import ForgotPasswordTab from './tabs/ForgotPasswordTab.js'
 import ResetPasswordTab from './tabs/ResetPasswordTab.js'
-
 import { Box, Tab, Tabs } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 
 const Content = () => {
+  //共通. 클릭
+  const handleClick = () => dispatch({ type: 'ShowToast', payload: true })
   const dispatch = useDispatch()
   const value = useSelector(state => state.signUp.tab)
   const tabChange = (event, newValue) => {
     dispatch({ type: 'ChangeTab', payload: newValue })
   }
-
-  //共通. 클릭
-  const handleClick = () => dispatch({ type: 'ShowToast', payload: true })
 
   return (
     <Box sx={{ width: '100%', height: { md: '100vh', xs: '108vh' } }}>

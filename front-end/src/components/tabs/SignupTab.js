@@ -1,6 +1,5 @@
 import { loremIpsum } from 'react-lorem-ipsum'
 import { Grid } from '@material-ui/core'
-import { domain, regexSearch } from '../../config/constants'
 import { useSelector, useDispatch } from 'react-redux'
 import PermIdentityIcon from '@mui/icons-material/PermIdentity'
 import KeyIcon from '@mui/icons-material/Key'
@@ -11,6 +10,7 @@ import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import axios from 'axios'
 import React, { useRef } from 'react'
+import { domain, regexSearch, message } from '../../config/constants.js'
 import { icon, fontSize } from '../../config/commonStyle'
 
 import {
@@ -27,11 +27,13 @@ import {
   FormHelperText,
 } from '@mui/material'
 
-const Signuptab = props => {
+const Signuptab = ({ handleClick }) => {
   // 共通. dispatch 선언
   const dispatch = useDispatch()
   // 共通. 폼 값
   const form = useSelector(state => state.signUp.form)
+  // 共通. 식별자 분해 할당
+  const { reject, agree, idVal, pwVal, pwConfirm, nickVal, emailVal } = message
   // 共通. 에러
   const error = useSelector(state => state.signUp.error)
   // 共通. 변경(form, error専用)
@@ -130,7 +132,7 @@ const Signuptab = props => {
       })
       dispatch({ type: 'SetMessage', payload: response.data.message })
       dispatch({ type: 'SetTheme', payload: 'success' })
-      props.handleClick()
+      handleClick()
 
       // 3초 후 메일인증 탭 자동 이동
       await new Promise(resolve => setTimeout(resolve, 3000))
@@ -139,7 +141,7 @@ const Signuptab = props => {
       dispatch({ type: 'SetTheme', payload: 'error' })
       if (error.code === 'ERR_NETWORK') {
         // 통신 실패
-        dispatch({ type: 'SetMessage', payload: '서버가 응답하지 않습니다.' })
+        dispatch({ type: 'SetMessage', payload: reject })
       } else if (error.response.status === 409) {
         // 중복 처리(409)
         dispatch({ type: 'SetMessage', payload: error.response.data.message })
@@ -148,7 +150,7 @@ const Signuptab = props => {
         // 그 외 에러(500)
         dispatch({ type: 'SetMessage', payload: error.response.data.message })
       }
-      props.handleClick()
+      handleClick()
     }
   }
 
@@ -176,7 +178,7 @@ const Signuptab = props => {
             control={
               <Checkbox checked={termsCheck} onChange={handleCheckboxChange} />
             }
-            label='해당 내용에 동의합니다.'
+            label={agree}
           />
         </Grid>
       </Grid>
@@ -194,11 +196,7 @@ const Signuptab = props => {
               value={form[0]}
               error={error[0]}
               onChange={idHandle}
-              helperText={
-                error[0]
-                  ? '소문자로 시작 및 숫자를 조합할 수 있습니다. (4~12자)'
-                  : ' '
-              }
+              helperText={error[0] ? idVal : ' '}
             />
           </Box>
         </Grid>
@@ -235,7 +233,7 @@ const Signuptab = props => {
                 }
               />
               {error[1] ? (
-                <FormHelperText children='대문자, 특수문자를 최소 하나 이상 포함하세요. (8~20자)' />
+                <FormHelperText children={pwVal.long} />
               ) : (
                 <FormHelperText children=' ' />
               )}
@@ -276,7 +274,7 @@ const Signuptab = props => {
                 }
               />
               {error[2] ? (
-                <FormHelperText children='패스워드와 동일하게 입력하세요.' />
+                <FormHelperText children={pwConfirm} />
               ) : (
                 <FormHelperText children=' ' />
               )}
@@ -294,7 +292,7 @@ const Signuptab = props => {
               onChange={nickHandle}
               value={form[3]}
               error={error[3]}
-              helperText={error[3] ? '한글 닉네임만 가능합니다. (2~6자)' : ' '}
+              helperText={error[3] ? nickVal : ' '}
             />
           </Box>
         </Grid>
@@ -311,9 +309,7 @@ const Signuptab = props => {
                   variant='standard'
                   value={form[4]}
                   error={error[4]}
-                  helperText={
-                    error[4] ? '올바른 형태의 이메일을 입력하세요.' : ' '
-                  }
+                  helperText={error[4] ? emailVal : ' '}
                 />
               </Box>
             </Grid>

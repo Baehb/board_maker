@@ -1,6 +1,6 @@
 import { Grid } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { regexSearch } from '../../config/constants.js'
+import { regexSearch, message } from '../../config/constants.js'
 import MailOutlineIcon from '@mui/icons-material/MailOutline'
 import PasswordIcon from '@mui/icons-material/Password'
 import KeyIcon from '@mui/icons-material/Key'
@@ -10,6 +10,8 @@ import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import axios from 'axios'
 import { icon, fontSize, center } from '../../config/commonStyle'
+import { useMediaQuery } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 import {
   Card,
   Box,
@@ -23,7 +25,8 @@ import {
   FormHelperText,
 } from '@mui/material'
 import { useRef } from 'react'
-const ResetPasswordTab = props => {
+
+const ResetPasswordTab = ({ handleClick }) => {
   // 共通. dispatch 선언
   const dispatch = useDispatch()
   // 共通. 폼 값
@@ -34,6 +37,11 @@ const ResetPasswordTab = props => {
       type,
       payload: [...form2.slice(0, num), val, ...form2.slice(num + 1)],
     })
+  // 特殊. 식별자 분해 할당
+  const { reject, pwVal, pwConfirm } = message
+  // 特殊. 미디어 쿼리 인식자
+  const theme = useTheme()
+  const media = useMediaQuery(theme.breakpoints.up('md'))
 
   // 1. 이메일
   const emailHandle = event => change('Change2Data', 0, event.target.value)
@@ -105,12 +113,12 @@ const ResetPasswordTab = props => {
       })
       dispatch({ type: 'SetMessage', payload: response.data.message })
       dispatch({ type: 'SetTheme', payload: 'success' })
-      props.handleClick()
+      handleClick()
     } catch (error) {
       dispatch({ type: 'SetTheme', payload: 'error' })
       // 네트워크 오류
       if (error.code === 'ERR_NETWORK') {
-        dispatch({ type: 'SetMessage', payload: '서버가 응답하지 않습니다.' })
+        dispatch({ type: 'SetMessage', payload: reject })
         // 입력 오류
       } else if (error.response.status === 400) {
         dispatch({ type: 'SetMessage', payload: error.response.data.message })
@@ -119,7 +127,7 @@ const ResetPasswordTab = props => {
         // 그 외 에러(404, 500)
         dispatch({ type: 'SetMessage', payload: error.response.data.message })
       }
-      props.handleClick()
+      handleClick()
     }
   }
 
@@ -199,7 +207,9 @@ const ResetPasswordTab = props => {
                   }
                 />
                 {show2PasswordErrorOne ? (
-                  <FormHelperText children='대・특수문자를 최소 하나 이상 포함 (8~20)' />
+                  <FormHelperText sx={{ fontSize: { md: '12px', xs: '10px' } }}>
+                    {media ? pwVal.long : pwVal.short}
+                  </FormHelperText>
                 ) : (
                   <FormHelperText children=' ' />
                 )}
@@ -240,7 +250,7 @@ const ResetPasswordTab = props => {
                   }
                 />
                 {show2PasswordErrorTwo ? (
-                  <FormHelperText children='패스워드와 동일하게 입력하세요.' />
+                  <FormHelperText children={pwConfirm} />
                 ) : (
                   <FormHelperText children=' ' />
                 )}
