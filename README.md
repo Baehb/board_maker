@@ -82,6 +82,7 @@
 <li>가입 요청 성공, 정상 DB 주입 완료.</li>
 <li>메일 인증 성공, 정상 DB 변경 완료.</li>
 <li>암호 찾기 프로세스 성공, 정상 DB 변경 완료.</li>
+<li>회원 가입 관련 페이지(& 모바일) 작성 완료. </li>
 </ul>
 
 # 9. AWS 호스팅
@@ -95,6 +96,6 @@
 <img width="340" src="https://user-images.githubusercontent.com/113015792/230740903-0bb97cd6-77bc-48c4-8e1d-1360a2b420f6.png">
 <img width="600" src="https://user-images.githubusercontent.com/113015792/230980345-93b15e64-7a81-4e92-8da1-9886e5531d01.png">
 <img width="340" src="https://user-images.githubusercontent.com/113015792/230980409-86c002df-22bb-4720-8a15-c6c3d4e85522.png">
+<img width="600" src="https://user-images.githubusercontent.com/113015792/232554809-88aefd85-1540-4bea-9517-4bd257f6e71e.png">
 </p>
-
 
