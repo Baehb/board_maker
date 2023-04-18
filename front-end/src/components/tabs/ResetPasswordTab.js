@@ -87,7 +87,7 @@ const ResetPasswordTab = ({ handleClick }) => {
     if (event.target.id === 'PwTwo') {
       dispatch({
         type: 'ChangeErrorPwTwo',
-        payload: temp.current !== val ? true : false,
+        payload: val.length && temp.current !== val ? true : false,
       })
       change('Change2Data', 3, event.target.value)
     }
@@ -179,7 +179,11 @@ const ResetPasswordTab = ({ handleClick }) => {
             <Box sx={center}>
               <KeyIcon sx={icon} />
               <FormControl
-                sx={{ width: '50%' }}
+                sx={{
+                  width: '50%',
+                  // 모바일 화면에서, 에러 텍스트 발생시 비밀번호 아이콘 움직이지 않도록 보정값 추가.
+                  marginBottom: !media && show2PasswordErrorOne && '0.7vh',
+                }}
                 variant='standard'
                 error={show2PasswordErrorOne}
                 onChange={pwHandle}
@@ -207,7 +211,7 @@ const ResetPasswordTab = ({ handleClick }) => {
                   }
                 />
                 {show2PasswordErrorOne ? (
-                  <FormHelperText sx={{ fontSize: { md: '12px', xs: '10px' } }}>
+                  <FormHelperText sx={{ fontSize: { md: '12px', xs: '9px' } }}>
                     {media ? pwVal.long : pwVal.short}
                   </FormHelperText>
                 ) : (
