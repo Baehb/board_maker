@@ -1,10 +1,9 @@
 # 0. 안내
 
-본 프로젝트 <b>Board Maker</b>는 포트폴리오 용도로 작성되었습니다.
-<br><br>각 해당 항목은, 본 페이지에서 찾아볼 수 있지만, 파일이 너무 큰 경우, 일부만 올려져 있습니다. 전체 파일은 <b>개발문서 폴더(document)</b>에서 찾아볼 수 있습니다.
+본 프로젝트 <b>Board Maker</b>는 포트폴리오 용도로 작성되었습니다. 게시판의 다앙한 기능을 작성해보는 프로젝트입니다.
+<br><br>각 해당 항목은, 본 페이지에서 찾아볼 수 있지만, 파일이 너무 큰 경우, 일부만 올려져 있습니다. 설계 문서는 <b>개발문서 폴더(document)</b>에서 찾아볼 수 있습니다.
 
 <ol>
-<li>기획</li>
 <li>요건 정의</li>
 <li>Use Case Diagram</li>
 <li>페이지 기능&분류도</li>
@@ -19,7 +18,7 @@
 <p align="center"><img width="745" src="https://user-images.githubusercontent.com/113015792/229287990-5363a4ab-d182-45c6-8fbd-dcd61d84b2c5.png"></p>
 <div align="center"><ul><li>해당 이미지는 일부입니다. 전체 파일은 document 폴더를 참조하세요.</li></ul></div>
 
-# 3. Use Case Diagram
+# 2. Use Case Diagram
 
 <p align="center"><img width="65%" height="65%" src="https://user-images.githubusercontent.com/113015792/229288479-c8a222c9-699c-4272-8bb7-9c3fe37fc866.png"></p>
 
